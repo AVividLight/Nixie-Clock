@@ -19,8 +19,6 @@ void setup() {
   askAndAssignTime();
 }
 
-// [1][2][:][3][7][\0]
-//	0  1  2  3  4   5
 
 char *inputLoop() {
 	char *inputText = new char[MAXIMUM_INPUT_TIME_LENGTH];
