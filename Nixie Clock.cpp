@@ -2,11 +2,11 @@
 #include <string.h>
 
 
+#define MAXIMUM_INPUT_TIME_LENGTH 5
+
 static unsigned short int seconds = 0;
 static unsigned char minute = 0;
 static unsigned char hour = 0;
-
-#define MAXIMUM_INPUT_TIME_LENGTH 5
 
 
 void setup() {
@@ -48,26 +48,14 @@ void askAndAssignTime () {
 	Serial.println("Input time in format 23:12");
 
 	char *inputTime = inputLoop();
-	int hoursMinsSeparatorPos = -1;
 
-	for(int i = 0; i < MAXIMUM_INPUT_TIME_LENGTH; i += 1) {
-		if(inputTime[i] == ':') {
-			hoursMinsSeparatorPos = i;
-			break;
-		}
-	}
-
-	char *hoursBuffer;
-	strncpy(hoursBuffer, inputTime, 2)
-	hour = atoi();
-
-	Serial.print(hour);
-	Serial.print(":");
-	Serial.print(minute);
+	char *timeBuffer;
+	timeBuffer = strtok(inputTime, ":");
+	hour = atoi(timeBuffer);
+	minute = atoi(strtok(NULL, ":"));
 }
 
 void loop() {
-  return;
   seconds += 1;
   delay(1000);
 
@@ -84,4 +72,10 @@ void loop() {
   if(hour == 24) {
 	hour = 0;
   }
+
+  Serial.print("It is currently ");
+  Serial.print(hour);
+  Serial.print(":");
+  Serial.print(minute);
+  Serial.println();
 }
