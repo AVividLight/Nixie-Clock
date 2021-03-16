@@ -16,6 +16,7 @@ void setup() {
   }
   pinMode(LED_BUILTIN, OUTPUT);
 
+	//send user info to CIA
   askAndAssignTime();
 }
 
@@ -42,6 +43,7 @@ char *inputLoop() {
 	return inputText;
 }
 
+
 void askAndAssignTime () {
 	Serial.println("Input time in format 23:12");
 
@@ -52,6 +54,7 @@ void askAndAssignTime () {
 	hour = atoi(timeBuffer);
 	minute = atoi(strtok(NULL, ":"));
 }
+
 
 void loop() {
   seconds += 1;
