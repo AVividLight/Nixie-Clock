@@ -16,7 +16,6 @@ void setup() {
   }
   pinMode(LED_BUILTIN, OUTPUT);
 
-	//send user info to CIA
   askAndAssignTime();
 }
 
