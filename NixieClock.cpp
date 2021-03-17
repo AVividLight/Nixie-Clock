@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include "HardwareSerial.h"
 #include "Arduino.h"
+#include "HardwareSerial.h"
 
 
 #define MAXIMUM_INPUT_TIME_LENGTH 5
@@ -22,23 +22,16 @@ void calculateCycleDelay() {
 
 char *inputLoop() {
 	char *inputText = new char[MAXIMUM_INPUT_TIME_LENGTH];
-	char *inputBuffer = new char;
 
-	while (true) {
-		if (Serial.available() >= MAXIMUM_INPUT_TIME_LENGTH) {
-			for (int i = 0; i < MAXIMUM_INPUT_TIME_LENGTH; i += 1) {
-				Serial.readBytes(inputBuffer, 1);
-				inputText[i] = *inputBuffer;
-			}
-			break;
-		} else {
-			delay(100);
-		}
+	while(Serial.available() < MAXIMUM_INPUT_TIME_LENGTH) {
+		delay(500);
 	}
 
+	for (int i = 0; i < MAXIMUM_INPUT_TIME_LENGTH; i += 1) {
+		Serial.readBytes(&inputText[i], 1);
+	}
 	inputText[MAXIMUM_INPUT_TIME_LENGTH] = '\0';
 
-	free(inputBuffer);
 	return inputText;
 }
 
