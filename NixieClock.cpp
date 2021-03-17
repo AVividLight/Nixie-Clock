@@ -72,7 +72,7 @@ void loop() {
 	cycleElapsedTime = millis() - cycleStartTime;
 	if(cycleElapsedTime > 1000) {
 		cycleDelay = 0;
-		Serial.println()
+		Serial.println();
 	} else {
 		cycleDelay = 1000 - cycleElapsedTime;
 	}
