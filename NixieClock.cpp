@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
+#include "HardwareSerial.h"
+#include "Arduino.h"
 
 
 #define MAXIMUM_INPUT_TIME_LENGTH 5
@@ -8,15 +10,14 @@ static unsigned short int seconds = 0;
 static unsigned char minute = 0;
 static unsigned char hour = 0;
 
-void setup() {
-	Serial.begin(9600);
-	while (!Serial) {
-		delay(250);
-	}
+static unsigned short cycleDelay = 0;
 
-	pinMode(LED_BUILTIN, OUTPUT);
-
-	askAndAssignTime();
+void calculateCycleDelay() {
+	unsigned int startTime = millis();
+	loop();
+	unsigned int cycleDuration = millis() - startTime;
+	
+	cycleDelay = (1000 - cycleDuration);
 }
 
 char *inputLoop() {
@@ -52,9 +53,13 @@ void askAndAssignTime() {
 	minute = atoi(strtok(NULL, ":"));
 }
 
+/*
+millis() returns the number of milliseconds passed since the Arduino board began running the current program as an unsigned long. This number will overflow (go back to zero), after approximately 50 days.
+*/
+
 void loop() {
 	seconds += 1;
-	delay(1000);
+	delay(cycleDelay);
 
 	if (seconds == 60) {
 		minute += 1;
@@ -75,4 +80,16 @@ void loop() {
 	Serial.print(":");
 	Serial.print(minute);
 	Serial.println();
+}
+
+void setup() {
+	Serial.begin(9600);
+	while (!Serial) {
+		delay(250);
+	}
+
+	//pinMode(LED_BUILTIN, OUTPUT);
+
+	askAndAssignTime();
+	calculateCycleDelay();
 }
