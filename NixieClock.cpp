@@ -10,15 +10,9 @@ static unsigned short int seconds = 0;
 static unsigned char minute = 0;
 static unsigned char hour = 0;
 
+static unsigned long cycleStartTime = 0;
+static unsigned short cycleElapsedTime = 0;
 static unsigned short cycleDelay = 0;
-
-void calculateCycleDelay() {
-	unsigned int startTime = millis();
-	loop();
-	unsigned int cycleDuration = millis() - startTime;
-	
-	cycleDelay = (1000 - cycleDuration);
-}
 
 char *inputLoop() {
 	char *inputText = new char[MAXIMUM_INPUT_TIME_LENGTH];
@@ -51,9 +45,10 @@ millis() returns the number of milliseconds passed since the Arduino board began
 */
 
 void loop() {
-	seconds += 1;
+	cycleStartTime = millis();
 	delay(cycleDelay);
 
+	seconds += 1;
 	if (seconds == 60) {
 		minute += 1;
 		seconds -= 60;
@@ -73,6 +68,14 @@ void loop() {
 	Serial.print(":");
 	Serial.print(minute);
 	Serial.println();
+
+	cycleElapsedTime = millis() - cycleStartTime;
+	if(cycleElapsedTime > 1000) {
+		cycleDelay = 0;
+		Serial.println()
+	} else {
+		cycleDelay = 1000 - cycleElapsedTime;
+	}
 }
 
 void setup() {
@@ -81,8 +84,5 @@ void setup() {
 		delay(250);
 	}
 
-	//pinMode(LED_BUILTIN, OUTPUT);
-
 	askAndAssignTime();
-	calculateCycleDelay();
 }
