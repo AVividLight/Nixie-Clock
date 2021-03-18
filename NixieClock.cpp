@@ -1,16 +1,21 @@
-#include <stdlib.h>
-#include <string.h>
 #include "Arduino.h"
 #include "HardwareSerial.h"
 
+#include "RTClib.h"
+
 
 #define MAXIMUM_INPUT_TIME_LENGTH 5
+#define SDA_PIN 4
+#define SCL_PIN 5
 
 static unsigned short int seconds = 0;
 static unsigned char minute = 0;
 static unsigned char hour = 0;
 
 static unsigned short cycleDelay = 0;
+
+static RTC_DS3231 sysClock;
+
 
 void calculateCycleDelay() {
 	unsigned int startTime = millis();
@@ -51,6 +56,7 @@ millis() returns the number of milliseconds passed since the Arduino board began
 */
 
 void loop() {
+	return;
 	seconds += 1;
 	delay(cycleDelay);
 
@@ -75,14 +81,48 @@ void loop() {
 	Serial.println();
 }
 
+void pollRTC() {
+	if(sysClock.lostPower()) {
+		Serial.println("Power failure detected- recalibration necessary");
+	} else {
+		DateTime now = sysClock.now();
+		Serial.print("now(): ");
+		Serial.print(now.hour());
+		Serial.print(":");
+		Serial.println(now.minute());
+	}
+}
+
+double currentTemp() {
+	return sysClock.getTemperature() * (9.0/5.0) + 32;;
+}
+
+void calibrateRTC() {
+	sysClock.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
+
 void setup() {
+	bool error = false;
+
 	Serial.begin(9600);
 	while (!Serial) {
 		delay(250);
 	}
 
+	if(!sysClock.begin()) {
+		Serial.println("Could not connect to RTC");
+		error = true;
+	}
+
+	if(!error) {
+		//calibrateRTC();
+		pollRTC ();
+		Serial.print("Current temp: ");
+		Serial.println(currentTemp());
+	}
+
 	//pinMode(LED_BUILTIN, OUTPUT);
 
-	askAndAssignTime();
-	calculateCycleDelay();
+	//askAndAssignTime();
+	//calculateCycleDelay();
 }
