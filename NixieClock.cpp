@@ -12,7 +12,7 @@ static unsigned char hour = 0;
 
 static unsigned long cycleStartTime = 0;
 static unsigned short cycleElapsedTime = 0;
-static unsigned short cycleDelay = 0;
+static unsigned short cycleDelay = 1000;
 
 char *inputLoop() {
 	char *inputText = new char[MAXIMUM_INPUT_TIME_LENGTH];
@@ -46,7 +46,7 @@ millis() returns the number of milliseconds passed since the Arduino board began
 
 void loop() {
 	cycleStartTime = millis();
-	delay(cycleDelay);
+	delay(1000 - (1000 - cycleElapsedTime));
 
 	seconds += 1;
 	if (seconds == 60) {
@@ -70,12 +70,15 @@ void loop() {
 	Serial.println();
 
 	cycleElapsedTime = millis() - cycleStartTime;
-	cycleDelay = (cycleElapsedTime > 1000 ? 0 : 1000 - cycleElapsedTime);
-	/*if(cycleElapsedTime > 1000) {
+	Serial.println(cycleElapsedTime);
+	if(cycleElapsedTime > 1000) {
+		//Serial.println("Elapsed time over 1 second! Running immediately.");
 		cycleDelay = 0;
 	} else {
 		cycleDelay = 1000 - cycleElapsedTime;
-	}*/
+		//Serial.print("Waiting x seconds until next cycle: ");
+		Serial.println(cycleDelay);
+	}
 }
 
 void setup() {
