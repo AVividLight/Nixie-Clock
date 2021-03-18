@@ -94,7 +94,7 @@ void pollRTC() {
 }
 
 double currentTemp() {
-	return sysClock.getTemperature() * (9.0/5.0) + 32;;
+	return sysClock.getTemperature() * (9.0/5.0) + 32;
 }
 
 void calibrateRTC() {
