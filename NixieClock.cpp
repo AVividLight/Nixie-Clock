@@ -3,13 +3,19 @@
 
 #include "RTClib.h"
 
+#include "Definitions.h"
+#include "LED.h"
+
+
 static RTC_DS3231 sysClock;
-const short CALIBRATION_BAND = 10;
+static unsigned long int clockDeviationAmount = 0;
+static LED *leds = new LED[34]; //23:05 => [3][10][1][10][10] => 34
 
 
 void loop() {
 	
 }
+
 
 void calibrateRTC() {
 	sysClock.adjust(DateTime(F(__DATE__), F(__TIME__)));
@@ -18,23 +24,50 @@ void calibrateRTC() {
 
 
 bool timeDesynced() {
-	return (abs((signed long long) sysClock.now().unixtime() - DateTime(F(__DATE__), F(__TIME__)).unixtime()) > CALIBRATION_BAND);
+	clockDeviationAmount = abs((signed long long) sysClock.now().unixtime() - DateTime(F(__DATE__), F(__TIME__)).unixtime());
+	return (clockDeviationAmount > CALIBRATION_MAX_ERROR);
 }
 
+
 void setup() {
-	Serial.begin(9600);
-	while (!Serial) {
-		delay(50);
-	}
+	short int errorCode = ErrorCode::NO_ERROR;
 
 	if(!sysClock.begin()) {
+		errorCode = ErrorCode::RTC_NOT_FOUND;
+	} else {
+		if(timeDesynced()) {
+			errorCode = ErrorCode::TIME_DESYNCED;
+			calibrateRTC();
+		}
+	}
+
+	Serial.begin(BAUD_RATE);
+	while (!Serial) {
+		delay(250);
+	}
+
+	switch(errorCode) {
+	case ErrorCode::NO_ERROR:
+		Serial.print(sysClock.now().hour());
+		Serial.print(':');
+		Serial.print(sysClock.now().minute());
+		Serial.print(':');
+		Serial.print(sysClock.now().second());
+		break;
+
+	case ErrorCode::RTC_NOT_FOUND:
 		Serial.println("Could not connect to RTC");
 		Serial.flush();
 		abort();
-	}
+		break;
 
-	if(timeDesynced()) {
-		Serial.print("Time is desynced.");
-		calibrateRTC();
+	case ErrorCode::TIME_DESYNCED:
+		Serial.print("Time is desynced by ");
+		Serial.print(clockDeviationAmount);
+		Serial.println(" seconds.");
+		break;
+
+	default:
+		break;
 	}
 }
