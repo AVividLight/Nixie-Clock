@@ -1,5 +1,5 @@
 # **NixieClock**
-### An Arduino controlled LED clock inspired by Nixie tubes
+## An Arduino controlled LED clock inspired by Nixie tubes
 ### Created by [AVividLight](https://github.com/AVividLight) & [DualJustice](https://github.com/DualJustice)
 ### This project was inspired by [connornishijima's](https://github.com/connornishijima) Lixie
 
