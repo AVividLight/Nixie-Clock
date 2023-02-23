@@ -9,11 +9,16 @@
 
 static RTC_DS3231 sysClock;
 static unsigned long int clockDeviationAmount = 0;
-static LED *leds = new LED[34]; //23:05 => [3][10][1][10][10] => 34
+static LED *leds = new LED[41]; //23:05 => [3][10][1][10][10] => 34
 
 
 void loop() {
-	
+	Serial.print(sysClock.now().hour());
+	Serial.print(':');
+	Serial.print(sysClock.now().minute());
+	Serial.print(':');
+	Serial.println(sysClock.now().second());
+	delay(1000);
 }
 
 
